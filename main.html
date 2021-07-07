@@ -1,0 +1,888 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=0">
+    <link rel='stylesheet' href='main.css'>
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">	  
+    <link href="https://fonts.googleapis.com/css2?family=Fjalla+One&display=swap" rel="stylesheet">  
+    <link rel="stylesheet" href="path/to/font-awesome/css/font-awesome.min.css">
+    <link rel="preconnect" href="https://fonts.gstatic.com">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald&display=swap" rel="stylesheet">
+
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
+  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+ 
+  <script src="https://code.jquery.com/jquery-2.2.0.min.js" type="text/javascript"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.6.0/slick.js"></script>
+    
+    <script>
+        $(document).ready(function()
+        {
+        $('.customer-logos').slick({
+            slidesToShow: 4,
+            slidesToScroll: 1,
+            autoplay: true,
+            autoplaySpeed: 1200,
+            arrows: false,
+            dots: false,
+                pauseOnHover: false,
+                responsive: [{
+                breakpoint: 768,
+                settings: {
+                    slidesToShow: 3
+                }
+            }, {
+                breakpoint: 520,
+                settings: {
+                    slidesToShow: 2
+                }
+            }]
+        });
+    });
+        var w,h,loopId,canvas,ctx,particles;
+    var options = {
+      particleColor:"rgb(245, 172, 152)",
+      lineColor:"rgb(242, 176, 148);",
+      particleAmount:40,
+      defaultRadius:2,
+      variantRadius:2,
+      defaultSpeed:1,
+      variantSpeed:1,
+      linkRadius:300
+    };
+    var rgb = options.lineColor.match(/\d+/g);
+    document.addEventListener("DOMContentLoaded",init);
+    function init()
+    {
+        canvas=document.getElementById("canvas");
+        ctx=canvas.getContext("2d");
+        resizeReset();
+        initilaiseElements();
+        startAnimation();
+    }      
+    function resizeReset()
+    {
+        w=canvas.width=window.innerWidth;
+        h=canvas.height=window.innerHeight;
+
+    }
+    function  initilaiseElements()
+    {
+        particles=[];
+        for(var i=0;i<options.particleAmount;i++)
+        {
+            particles.push(new Particle());
+        }
+    }
+
+    function startAnimation()
+    {
+        loopId = requestAnimationFrame(animationLoop);
+
+    }
+    function animationLoop()
+    {
+        ctx.clearRect(0,0,w,h);
+        drawScene();
+        id = requestAnimationFrame(animationLoop);
+    }
+    function drawScene()
+    {
+        drawLine();
+        drawParticle();
+    }
+    function drawParticle()
+    {
+        for(var i=0;i<particles.length;i++)
+        {
+            particles[i].update();
+            particles[i].draw();
+        }
+    }
+    function drawLine()
+    {
+        for(var i=0;i<particles.length;i++)
+        {
+            linkPoints(particles[i],particles);
+        }
+    }
+    function linkPoints(point,hubs)
+    {
+      for(var i=0;i<hubs.length;i++)
+      {
+          var distance = checkDistance(point.x,point.y,hubs[i].x,hubs[i].y);
+          var opacity = 1-distance / options.linkRadius;
+          if(opacity > 0)
+          {
+              ctx.lineWidth = 0.5;
+              ctx.strokeStyle = 'rgba('+rgb[0]+','+rgb[1]+','+rgb[2]+','+opacity+')';
+              ctx.beginPath();
+              ctx.moveTo(point.x,point.y);
+              ctx.lineTo(hubs[i].x,hubs[i].y);
+              ctx.closePath();
+              ctx.stroke();
+          }
+      }     
+   }
+   function checkDistance(x1,x2,y1,y2)
+   {
+       return Math.sqrt( Math.pow(x2 - x1,2) + Math.pow(y2 -y1,2) );
+   }
+    Particle=function()
+    {
+        var _this=this;
+        _this.x = Math.random() * w;
+        _this.y = Math.random() * h;
+        _this.color = options.particleColor;
+        _this.radius = options.defaultRadius + Math.random()* options.variantRadius;
+        _this.speed = options.defaultSpeed + Math.random() * options.variantSpeed;
+        _this.directionAngle = Math.floor(Math.random() *  360);
+        _this.vector = {
+          x:Math.cos(_this.directionAngle) * _this.speed,
+          y:Math.sin(_this.directionAngle) * _this.speed
+        }
+        _this.update = function()
+        {
+              _this.border();
+              _this.x += _this.vector.x;
+              _this.y += _this.vector.y;
+        }
+        _this.border = function()
+        {
+          if(_this.x >= w || _this.x <= 0)
+          {
+              _this.vector.x=-1;
+          }
+          if(_this.y >= h || _this.y <= 0)
+          {
+              _this.vector.y=-1;
+          }
+          if(_this.x > w)_this.x = w;
+          if(_this.y > h)_this.y = h;
+          if(_this.x < 0)_this.x = 0;
+          if(_this.y < 0)_this.y = 0;
+        }
+        _this.draw = function()
+        {
+            ctx.beginPath();
+            ctx.arc(_this.x,_this.y,_this.radius,0,Math.PI *2 );
+            ctx.closePath();
+            ctx.fillStyle = _this.color;
+            ctx.fill();          }
+
+    }
+
+        var a = 0;
+$(window).scroll(function() 
+{
+
+  var oTop = $('#counter').offset().top - window.innerHeight;
+  if (a == 0 && $(window).scrollTop() > oTop) {
+    $('.counter-value').each(function() {
+      var $this = $(this),
+        countTo = $this.attr('data-count');
+      $({
+        countNum: $this.text()
+      }).animate({
+          countNum: countTo
+        },
+
+        {
+          duration: 2000,
+          easing: 'swing',
+          step: function() {
+            $this.text(Math.floor(this.countNum));
+          },
+          complete: function() {
+            $this.text(this.countNum);
+            
+          }
+
+        });
+    });
+    a = 1;
+  }
+
+});
+
+var slideIndex = 1;
+showSlides(slideIndex);
+
+function plusSlides(n) {
+  showSlides(slideIndex += n);
+}
+
+function currentSlide(n) {
+  showSlides(slideIndex = n);
+}
+
+function showSlides(n) {
+  var i;
+  var slides = document.getElementsByClassName("mySlides");
+  var dots = document.getElementsByClassName("dot");
+  if (n > slides.length) {slideIndex = 1}    
+  if (n < 1) {slideIndex = slides.length}
+  for (i = 0; i < slides.length; i++) {
+      slides[i].style.display = "none";  
+  }
+  for (i = 0; i < dots.length; i++) {
+      dots[i].className = dots[i].className.replace(" active", "");
+  }
+  slides[slideIndex-1].style.display = "block";  
+  dots[slideIndex-1].className += " active";
+}
+    </script>
+</head>
+<body>
+    <div class="holder">
+        <div class="container">
+       
+        <nav class="navbar navbar-expand-lg  sticky-top" id="nav1">
+            <a class="navbar-brand" href="#"><img src="https://t-hub.co/wp-content/uploads/2019/12/Logo-01-330x275.jpg"></a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarText" aria-controls="navbarText" aria-expanded="false" aria-label="Toggle navigation">
+              <span class="navbar-toggler-icon"></span>
+            </button>
+              <div class="collapse navbar-collapse" id="nav2" >
+                  <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                       <a class="nav-link" href="#">STARTUPS</a>
+                     </li>
+                      <li class="nav-item">
+                       <a class="nav-link" href="#">CORPORATIONS</a>
+                     </li>
+                      <li class="nav-item">
+                       <a class="nav-link" href="#">OTHER STACKHOLDERS</a>
+                     </li>
+                     <li class="nav-item">
+                       <a class="nav-link" href="#">PROGRAMS</a>
+                     </li>
+                     <li class="nav-item">
+                       <a class="nav-link" href="#">EVENTS</a>
+                     </li>
+                     <li class="nav-item">
+                       <a class="nav-link" href="#">RESOURCES</a>
+                     </li>
+                     <li class="nav-item">
+                        <a class="nav-link" href="#cont">NEWS</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="#cont">ABOUT US</a>
+                      </li>
+                      <li class="nav-item">
+                        <a class="nav-link" href="#cont">CONTACT US</a>
+                      </li>
+                  </ul>
+              </div>
+              </nav>
+              <div class="Content">
+                <h1>ENABLING AND</h1>
+                <h1> EMPOWERING</h1>
+                <h3>AN ECOSYSTEM HUNGRY FOR INNOVATION</h3>
+    
+            </div>  
+        <canvas id="canvas">
+           
+        </canvas>  
+        
+    </div>
+</div>
+
+    <h2 id="hh1">OUR INNOVATION IMPACT</h2>
+    <div class="row" style="margin:30px;">
+       
+        <div class="col-md-1">
+            <div id="counter">
+                <img src="https://t-hub.co/wp-content/uploads/2019/08/home-icon1.png" style="width:100px;height:100px;"></img>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <span class="counter-value" data-count="1100" style="font-size: 30px;font-family: 'Oswald', sans-serif;">0</span> <i class="fa fa-plus" aria-hidden="true" style="font-size:25px;color:#ef4723;"></i>
+            <br>
+            <br>
+            <span class="counter-text"> Startups Impacted </span>
+        </div>
+
+        <div class="col-md-1">
+            <div id="counter">
+                <img src="https://t-hub.co/wp-content/uploads/2019/08/home-icon2.png" style="width:100px;height:100px;"></img>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <span class="counter-value" data-count="75" style="font-size: 30px;font-family: 'Oswald', sans-serif;">0</span> <i class="fa fa-plus" aria-hidden="true" style="font-size:25px;color:#ef4723;"></i>
+            <br>
+            <br>
+            <span class="counter-text"> Exclusive  Programs</span>
+        </div>
+
+
+        <div class="col-md-1">
+            <div id="counter">
+                <img src="https://t-hub.co/wp-content/uploads/2019/08/home-icon3.png" style="width:100px;height:100px;"></img>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <span class="counter-value" data-count="850" style="font-size: 30px;font-family: 'Oswald', sans-serif;">0</span> <i class="fa fa-plus" aria-hidden="true" style="font-size:25px;color:#ef4723;"></i>
+            <br>
+            <br>
+            <span class="counter-text">Events</span>
+        </div>
+
+
+        <div class="col-md-1">
+            <div id="counter">
+                <img src="https://t-hub.co/wp-content/uploads/2019/08/home-icon4.png" style="width:100px;height:100px;"></img>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <span class="counter-value" data-count="1800" style="font-size: 30px;font-family: 'Oswald', sans-serif;">0</span> <i class="fa fa-plus" aria-hidden="true" style="font-size:25px;color:#ef4723;"></i>
+            <br>
+            <br>
+            <span class="counter-text">Funding Raised by Program Startups</span>
+        </div>
+        
+    </div>
+  
+    
+    <div class="row" style="margin:30px;">
+       
+        <div class="col-md-1">
+            <div id="counter">
+                <img src="https://t-hub.co/wp-content/uploads/2019/08/home-icon5.png" style="width:100px;height:100px;"></img>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <span class="counter-value" data-count="1500" style="font-size: 30px;font-family: 'Oswald', sans-serif;">0</span> <i class="fa fa-plus" aria-hidden="true" style="font-size:25px;color:#ef4723;"></i>
+            <br>
+            <br>
+            <span class="counter-text">JObs Enabled by Program Startups </span>
+        </div>
+
+        <div class="col-md-1">
+            <div id="counter">
+                <img src="https://t-hub.co/wp-content/uploads/2019/08/home-icon6.png" style="width:100px;height:100px;"></img>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <span class="counter-value" data-count="325" style="font-size: 30px;font-family: 'Oswald', sans-serif;">0</span> <i class="fa fa-plus" aria-hidden="true" style="font-size:25px;color:#ef4723;"></i>
+            <br>
+            <br>
+            <span class="counter-text"> International  Connects</span>
+        </div>
+
+
+        <div class="col-md-1">
+            <div id="counter">
+                <img src="https://t-hub.co/wp-content/uploads/2019/08/home-icon7.png" style="width:100px;height:100px;"></img>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <span class="counter-value" data-count="40" style="font-size: 30px;font-family: 'Oswald', sans-serif;">0</span> <i class="fa fa-plus" aria-hidden="true" style="font-size:25px;color:#ef4723;"></i>
+            <br>
+            <br>
+            <span class="counter-text">Countries Curated Innovative Startups</span>
+        </div>
+
+
+        <div class="col-md-1">
+            <div id="counter">
+                <img src="https://t-hub.co/wp-content/uploads/2019/08/home-icon8.png" style="width:100px;height:100px;"></img>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <span class="counter-value" data-count="110" style="font-size: 30px;font-family: 'Oswald', sans-serif;">0</span><span style="font-size:30px;color:#ef4723;"><b>K</b></span> <i class="fa fa-plus" aria-hidden="true" style="font-size:25px;color:#ef4723;"></i>
+            <br>
+            <br>
+            <span class="counter-text">T-Hub Visitors</span>
+        </div>
+        
+    </div>
+
+    <h2 style=" padding-left:250px;color:#4c5267;" >POWERING NEXT-GEN PRODUCTS AND BUSINESS MODELS</h2>
+    <br>
+    <div style="margin-left:170px;">
+    <p style="text-align: justify;margin-left:80px; font-family:'Poppins',Sans-serif;font-style: inherit;font-size: 100%;vertical-align: baseline;">At T-Hub, we pioneer India’s leading innovation ecosystem. We synergise startups, corporations, governments,
+         academia and investors </p> 
+         <p style="text-align:justify;margin-left:105px; font-family:'Poppins',Sans-serif;font-style: inherit;font-size: 100%;vertical-align: baseline;">drive transformative change. Our innovation ecosystem stands firmly on seven key pillars bridging
+         the gap between visionary</p><p style="text-align: justify;margin-left:145px; font-family:'Poppins',Sans-serif;font-style: inherit;font-size: 100%;vertical-align: baseline;">entrepreneurs and corporates seeking the next big idea, and everyone in between.</p>
+    </div>    
+    <br>
+    <div class="cards">
+        <div class="row">
+            <div class="col-md-3">
+                <div class="card" style="width: 18rem;">
+                    <img class="card-img-top" src="https://t-hub.co/wp-content/uploads/2019/07/01-leadership-1.png" alt="Card image cap">
+                    
+                    <div class="card-body">
+                        <h5 class="card-title">Thought</h5> 
+                        <h5 class="card-title">Leadership</h5>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="col-md-3">
+                <div class="card" style="width: 18rem;">
+                    <img class="card-img-top" src="https://t-hub.co/wp-content/uploads/2019/07/02-Government-6.png" alt="Card image cap">
+                    
+                    <div class="card-body">
+                        <h5 class="card-title">Government</h5> 
+                        <h5 class="card-title">Support</h5>
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="card" style="width: 18rem;">
+                    <img class="card-img-top" src="https://t-hub.co/wp-content/uploads/2019/07/03-landscape-2.png" alt="Card image cap">
+                   
+                    <div class="card-body">
+                        <h5 class="card-title">Landscape Enablement</h5> 
+                        <h5 class="card-title">& Thoughness</h5>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card" style="width: 18rem;">
+                    <img class="card-img-top" src="https://t-hub.co/wp-content/uploads/2019/07/04-Investment-6.png" alt="Card image cap">
+                    
+                    <div class="card-body">
+                        <h5 class="card-title">Investment</h5> 
+                        <h5 class="card-title">Opportunities</h5>                       
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+  <br>
+  <br>
+    <div class="cards2">
+        <div class="row">
+            <div class="col-md-2">
+                
+            </div>
+            <div class="col-md-3">
+                <div class="card" style="width: 18rem;">
+                    <img class="card-img-top" src="https://t-hub.co/wp-content/uploads/2019/07/05-CMOT-2.png" alt="Card image cap">
+                   
+                    <div class="card-body">
+                        <h5 class="card-title">Critical Mass</h5> 
+                        <h5 class="card-title">Of Talent</h5>                       
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="card" style="width: 18rem;">
+                    <img class="card-img-top" src="https://t-hub.co/wp-content/uploads/2019/07/06-2CI.png" alt="Card image cap">
+                    
+                    <div class="card-body">
+                        <h5 class="card-title">Corporate</h5> 
+                        <h5 class="card-title">Implementation</h5>                       
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="card" style="width: 18rem;">
+                    <img class="card-img-top" src="https://t-hub.co/wp-content/uploads/2019/07/07-RC-5.png" alt="Card image cap">
+                    
+                    <div class="card-body">
+                        <h5 class="card-title">Regularity</h5> 
+                        <h5 class="card-title">Clarity</h5>                       
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-1">
+                
+            </div>
+        </div>   
+    </div>
+    <br>
+    <button type="btn" class="btn btn-outline-dark" id="btn1" >KNOW US BETTER</button>
+    <br><br><br>
+
+    <!-- Carosuel starts -->
+    <div id="demo" class="carousel slide" data-ride="carousel">
+        <ul class="carousel-indicators">
+          <li data-target="#demo" data-slide-to="0" class="active"></li>
+          <li data-target="#demo" data-slide-to="1"></li>
+          <li data-target="#demo" data-slide-to="2"></li>
+        </ul>
+        <div class="carousel-inner" >
+          <div class="carousel-item active">
+              <div class="carousel-caption">
+                  <h4 style="color: black;">MEET OUR STARTUPS</h4>
+                      <br>
+                      <p style="text-align: left;color:black;">T-Hub is actively scripting success stories by steering the innovation journey 
+                          of over 500 startups, enabling them to scale up faster and create business value.</p>
+                      <button type="btn" id="btn2" class="btn btn-outline-dark">Discover More</button>
+                </div>  
+              <div class="col">
+                  <div class="row-md-6">
+                      <div class="logo-img" >
+                          <img src="https://t-hub.co/wp-content/uploads/2019/07/startup-slide.png" alt="img-fluid" >
+                          
+                          <img src="https://t-hub.co/wp-content/uploads/2019/07/startup-slide-02.png" alt="img-fluid" >
+                          
+                          <img src="https://t-hub.co/wp-content/uploads/2019/07/startup-slide-03.png" alt="img-fluid" >
+                  
+                          <img src="https://t-hub.co/wp-content/uploads/2019/07/startup-slide-04.png" alt="img-fluid" >
+                      </div>
+                  </div>
+                  <br>
+                  <div class="row-md-6">
+                      <div class="slide-logos2">
+              
+                          <div class="logo-img">
+                              <img src="https://t-hub.co/wp-content/uploads/2019/07/startup-slide-05.png" alt="img-fluid" >
+                              
+                              <img src="https://t-hub.co/wp-content/uploads/2019/07/startup-slide-06.png" alt="img-fluid" >
+                              
+                              <img src="https://t-hub.co/wp-content/uploads/2019/07/startup-slide-07.png" alt="img-fluid" >
+                      
+                              <img src="https://t-hub.co/wp-content/uploads/2019/07/startup-slide-08.png" alt="img-fluid" >
+                          </div>
+                      </div>
+                  </div>
+              </div>
+             
+            
+          </div>
+      
+          <div class="carousel-item">
+              <div class="carousel-caption">
+                  <h4 style="color: black;">MEET OUR CORPORATES</h4>
+                      <br>
+                      <p style="text-align: left;color:black;">T-Hub is supporting over 100 corporate partners 
+                          in securing business solutions from entrepreneurs across the world.</p>
+                     
+                </div>  
+              <div class="col">
+                  <div class="row-md-6">
+                      <div class="logo-img">
+                          <img src="https://t-hub.co/wp-content/uploads/2019/07/corporations-slide.png" alt="img-fluid" >
+                          
+                          <img src="https://t-hub.co/wp-content/uploads/2019/07/corporations-slide-2.png" alt="img-fluid" >
+                          
+                          <img src="https://t-hub.co/wp-content/uploads/2019/07/corporations-slide-3.png" alt="img-fluid" >
+                  
+                          <img src="https://t-hub.co/wp-content/uploads/2019/07/NH-Ambuja-Neotia.jpg" alt="img-fluid" >
+                      </div>
+                  </div>
+                  <br>
+                  <div class="row-md-6">
+                      <div class="slide-logos2">
+              
+                          <div class="logo-img">
+                              <img src="https://t-hub.co/wp-content/uploads/2019/07/Freshworks.jpg" alt="img-fluid" >
+                              
+                              <img src="https://t-hub.co/wp-content/uploads/2019/07/Boeing.jpg" alt="img-fluid" >
+                              
+                              <img src="https://t-hub.co/wp-content/uploads/2019/07/Cisco-Mtuity.jpg" alt="img-fluid" >
+                      
+                              <img src="https://t-hub.co/wp-content/uploads/2019/07/Facebook.jpg" alt="img-fluid" >
+                          </div>
+                      </div>
+                  </div>
+              </div>
+              </div>
+              <div class="carousel-item">
+                  <div class="carousel-caption">
+                      <h4 style="color: black;">MEET YOUR OTHER STACKHOLDER</h4>
+                          <br>
+                          <p style="text-align: left;color:black;">We are building a culture of innovation through collaboration with a network 
+                              of investors, mentors, service providers, ecosystem enablers and the government.</p>
+                         
+                    </div>  
+                  <div class="col">
+                      <div class="row-md-6">
+                          <div class="logo-img">
+                              <img src="https://t-hub.co/wp-content/uploads/2019/07/Stackholder-01.png" alt="img-fluid" >
+                                      
+                              <img src="https://t-hub.co/wp-content/uploads/2019/07/Stackholde-02.png" alt="img-fluid" >
+                              
+                              <img src="https://t-hub.co/wp-content/uploads/2019/07/Stackholde-03.png" alt="img-fluid" >
+                      
+                              <img src="https://t-hub.co/wp-content/uploads/2019/07/Stackholde-04.png" alt="img-fluid" >
+                          </div>
+                      </div>
+                      <br>
+                      <div class="row-md-6">
+                          <div class="slide-logos2">
+                  
+                              <div class="logo-img">
+                                  <img src="https://t-hub.co/wp-content/uploads/2019/07/Stackholde-05.png" alt="img-fluid" >
+                                          
+                                          <img src="https://t-hub.co/wp-content/uploads/2019/07/Stackholde-06.png" alt="img-fluid" >
+                                          
+                                          <img src="https://t-hub.co/wp-content/uploads/2019/07/Stackholde-07.png" alt="img-fluid" >
+                                  
+                                          <img src="https://t-hub.co/wp-content/uploads/2019/07/Stackholde-08.png" alt="img-fluid" >
+                              </div>
+                          </div>
+                      </div>
+                  </div>          
+              </div>
+              
+          </div>
+      
+        
+        <a class="carousel-control-prev" href="#demo" data-slide="prev">
+          <span class="carousel-control-prev-icon" ></span>
+        </a>
+        <a class="carousel-control-next" href="#demo" data-slide="next">
+          <span class="carousel-control-next-icon"></span>
+        </a>
+      </div>
+      <br>
+      <br>
+
+    <div class="prog">
+        <h2 style=" padding-left:450px;color:#4c5267;">OUR PROGRAMS</h2>
+        <p style="color:#4c5267;padding-left:50px;font-size:20px;text-align:justify;margin:10px; font-family:'Poppins',Sans-serif;"> 
+            T-Hub’s state-of-the-art startup programs are designed to foster a culture of innovation through
+             access to cutting-edge technology and a </p><p style="color:#4c5267;padding-left:190px;font-size:20px;text-align:justify; font-family:'Poppins',Sans-serif;">network of trusted industry leaders, mentors and investors.</p>
+        </p>
+        <div  id="cc2">
+            <div class="row">
+                <div class="col-md-3">
+                    <div class="card" >
+                        <img class="card-img-top" id="cc2i1" src="https://t-hub.co/wp-content/uploads/2020/12/Program-card.jpg" alt="Card image cap">
+                        
+                        <div class="card-body">
+                            <h4 class="card-title" style="font-size: 20px;">LA TROBE ACCELARATOR PROGRAM</h4>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-1"></div>
+                <div class="col-md-3">
+                    <div class="card" >
+                        <img class="card-img-top" id="cc2i2" src="https://t-hub.co/wp-content/uploads/2020/09/Program-card.jpg" alt="Card image cap">
+                        
+                        <div class="card-body">
+                            <h4 class="card-title" style="font-size: 20px;">ROAD TO SHINE HIROSHIMA PROGRAM</h4> 
+                        </div>
+                    </div>
+                </div>  <div class="col-md-1"></div>
+                <div class="col-md-3">
+                    <div class="card" >
+                        <img class="card-img-top" id="cc2i3" src="https://t-hub.co/wp-content/uploads/2020/04/community_program_Card.jpg" alt="Card image cap">
+                        
+                        <div class="card-body">
+                            <h4 class="card-title" style="font-size: 20px;">COMMUNITY MEMBERSHIP</h4> 
+                            
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-1"></div>
+            </div>  
+        </div>
+        <br>
+        <button type="btn" class="btn btn-outline-dark" id="btn5">VIEW ALL PROGRAMS</button>
+    </div>
+
+<br><br>
+
+    <!--   Events -->
+    <div class="events">
+        <div class="row">
+            <div class="col-md-3">
+
+            </div>
+            <div class="col-md-3">
+                <h2 id="eve_head">EVENTS</h2>
+                <p id="eve_p">Events from across India and the globe which you need to know about. </p>
+                <button type="btn" class="btn btn-outline-dark" id="eve_btn">VIEW ALL EVENTS</button>
+                <br>
+            </div>
+            <div class="col-md-6">
+
+            </div>
+        </div>
+    </div>
+
+    <br>
+    <br>
+    <!-- visitors -->
+    <div class="visit">
+        <div class="row">
+            <div class="col-md-2">
+
+            </div>
+            <div class="col-md-2">
+                <h2 id="visit_head">PEOPLE WHO VISITED US</h2>
+                <p id="visit_p"> T-Hub regularly hosts prominent visitors from across industry, academia and the government, from India and overseas</p>
+            </div>
+            <div class="col-md-8">
+                <div class="customer-logos">
+                    <div class="slide">
+                        <img class="img-slide" src="https://t-hub.co/wp-content/uploads/2019/07/Ratan-Tata-1-242x300.png">
+                        <!-- <h4>Ratan Tata</h4>
+                        <p id="slide-p">Chairman</p>
+                        <span id="silde-sp">Tata sons</span>    -->
+                    </div>
+                    <div class="slide">
+                        <img class="img-slide" src="https://t-hub.co/wp-content/uploads/2019/07/Satya-Nadella-2-242x300.png">
+                        <!-- <h4>Satya Nadell</h4>
+                        <p id="slide-p">CEO</p>
+                        <span id="silde-sp">Microsoft</span> -->
+            
+                    </div>
+                    <div class="slide">
+                        <img class="img-slide"  src="https://t-hub.co/wp-content/uploads/2019/07/CPGurnani-242x300.png">
+                        <!-- <h4>CP Gurnani</h4>
+                        <p id="slide-p">CEO</p>
+                        <span id="silde-sp">Tech Mahindra/span> -->
+                    </div>
+                    <div class="slide">
+                        <img class="img-slide" src="https://t-hub.co/wp-content/uploads/2019/07/Arian-Lewis-242x300.png">
+                        <!-- <h4>Arian Lewis</h4>
+                        <p id="slide-p">Head of Open Innovation</p>
+                        <span id="silde-sp">Barclayss</span> -->
+                    </div>
+                    <div class="slide">
+                        <img class="img-slide" src="https://t-hub.co/wp-content/uploads/2019/07/David-Gledhill-242x300.png">
+                        <!-- <h4>David Gledhill</h4>
+                        <p id="slide-p">MD of Group Tech and Operations</p>
+                        <span id="silde-sp">DBS Bank</span> -->
+                    </div>
+                    <div class="slide">
+                        <img class="img-slide" src="https://t-hub.co/wp-content/uploads/2019/07/Debjani-Ghosh-242x300.png">
+                        <!-- <h4>Debjani Ghosh</h4>
+                        <p id="slide-p">MD - South Asia</p>
+                        <span id="silde-sp">Intel</span> -->
+                    </div>
+                    <div class="slide">
+                        <img class="img-slide" src="https://t-hub.co/wp-content/uploads/2019/07/Desh-Deshpande-242x300.png">
+                        <!-- <h4>Desh Deshpande</h4>
+                        <p id="slide-p">Chairman</p>
+                        <span id="silde-sp">Sycamore Networks</span> -->
+                    </div>
+                    <div class="slide">
+                        <img class="img-slide" src="https://t-hub.co/wp-content/uploads/2019/07/Eric-Alexander-242x300.png">
+                        <!-- <h4>Eric Alexander</h4>
+                        <p id="slide-p">VP - APAC</p>
+                        <span id="silde-sp">Uber</span> -->
+                    </div>
+                    <div class="slide">
+                        <img class="img-slide" src="https://t-hub.co/wp-content/uploads/2019/07/HK-Mittal-242x300.png">
+                        <!-- <h4>Dr. HK Mittal</h4>
+                        <p id="slide-p">Chairman</p>
+                        <span id="silde-sp">DST</span> -->
+                    </div>
+                    <div class="slide">
+                        <img class="img-slide" src="https://t-hub.co/wp-content/uploads/2019/07/James-Kugler-242x300.png">
+                        <!-- <h4>James Kugler</h4>
+                        <p id="slide-p">Chief Digital Officer</p>
+                        <span id="silde-sp">Merck</span> -->
+                    </div>
+                    <div class="slide">
+                        <img class="img-slide" src="https://t-hub.co/wp-content/uploads/2019/07/Kanwal-Rekhi-242x300.png">
+                        <!-- <h4>Kanwal Rekhi</h4>
+                        <p id="slide-p">MD</p>
+                        <span id="silde-sp">Inventus Capital Partners</span>    -->
+                    </div>
+                    <div class="slide">
+                        <img class="img-slide" src="https://t-hub.co/wp-content/uploads/2019/07/Keerti-melkote-242x300.png">
+                        <!-- <h4>Keerti Melkote</h4>
+                        <p id="slide-p">CTO &amp; Co-Founder</p>
+                        <span id="silde-sp">Tata sons</span> -->
+                    </div>
+                    <div class="slide">
+                        <img class="img-slide" src="https://t-hub.co/wp-content/uploads/2019/07/Mohandas-Pai-242x300.png">
+                        <!-- <h4>TV Mohandas Pai</h4>
+                        <p id="slide-p">Chairman</p>
+                        <span id="silde-sp">Manipal Global Education Services</span> -->
+                    </div>
+                    <div class="slide">
+                        <img class="img-slide" src="https://t-hub.co/wp-content/uploads/2019/07/Manohar-Parikar-242x300.png">
+                        <!--<h4>Manohar Parrikar</h4>
+                        <p id="slide-p">Former Defence Minister &amp; Goa CM</p>
+                        <span id="silde-sp">Govt. of India</span> -->
+                    </div>
+                    <div class="slide">
+                        <img class="img-slide" src="https://t-hub.co/wp-content/uploads/2019/07/Ravi-Shankar-Prasad-242x300.png ">
+                        <!-- <h4>Ravi Shankar Prasad</h4>
+                        <p id="slide-p">Union Minister (IT, Law &amp; Justice)</p>
+                        <span id="silde-sp">Govt. of India</span> -->
+                    </div>
+                    <div class="slide">
+                        <img class="img-slide" src="https://t-hub.co/wp-content/uploads/2019/07/Shantanu-Narayen-242x300.png">
+                        <!-- <h4>Shantanu Narayen</h4>
+                        <p id="slide-p">CEO</p>
+                        <span id="silde-sp">Adobe Systems</span> -->
+                    </div>
+                    <div class="slide">
+                        <img class="img-slide" src="https://t-hub.co/wp-content/uploads/2019/07/Vishal-Sikka-242x300.png ">
+                        <!-- <h4>Vishal Sikka</h4>
+                        <p id="slide-p">Former CEO &amp; MD</p>
+                        <span id="silde-sp">Infosys</span> -->
+                    </div>
+                    <div class="slide">
+                        <img class="img-slide" src="https://t-hub.co/wp-content/uploads/2019/07/Lim-Swee-Nian-242x300.png">
+                        <!--<h4>Lim Swee Nian</h4>
+                        <p id="slide-p">Assistant Managing Director</p>
+                        <span id="silde-sp">EDB Singapore</span> -->
+                    </div>
+                    <div class="slide">
+                        <img class="img-slide" src="https://t-hub.co/wp-content/uploads/2019/07/Neel-Raheja-242x300.png">
+                          <!-- 
+                        <h4>Neel Raheja</h4>
+                        <p id="slide-p">Assistant Managing Director</p>
+                        <span id="silde-sp">EDB Singapore</span> -->
+                    </div>
+                  </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- <div class="footer">
+        <div class="row">
+            <div class="col-md-2">
+                <h5 style="padding-left:60px;">ABOUT T-HUB</h5>
+                <ul id="footer-r1">
+                    <li>About us</li>
+                    <li>People</li>
+                    <li>Programs</li>
+                    <li>Events</li>
+                    <li>News</li>
+                    <li>Careers</li>
+                </ul>
+            </div>
+
+            <div class="col-md-3">
+                <h5 style="padding-left:60px;">OUR INNOVATION SYSTEM</h5>
+                <ul id="footer-r2">
+                    <li>Startups</li>
+                    <li>Corporations</li>
+                    <li>Government</li>
+                    <li>Academia</li>
+                    <li>Investors</li>
+                    <li>Ecosystem Enablers</li>
+                    <li>Mentors</li>
+                    <li>Service Providers</li>
+                </ul>
+            </div>
+            <div class="col-md-3">
+                <h5 style="padding-left:160px;">OTHERS</h5>
+                <ul>
+                    <li>RTI</li>
+                    <li>Terms and Conditions</li>
+                    <li>Site Map</li>
+                    <li>Privacy and Cookie Policy</li>
+                    <li>Contact us</li>
+                    <li>Schedule a Visit</li>
+                </ul>
+            </div>
+            <div class="col-md-4"></div>
+        </div>
+    </div> -->
+</div>
+
+</body>
+</html>
